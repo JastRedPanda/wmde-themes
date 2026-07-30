@@ -16,11 +16,17 @@ pkgdesc="WMDE theme - the palettes, fonts, metrics, panel, dock and wallpaper de
 arch=('any')
 url="https://wmde.fun"
 license=('GPL-3.0-only')
-# No depends: these are data files read through cosmic-config by whichever component
-# wants them. The built-in theme points its wallpaper at the image wmde-bg ships, but
-# declaring that here would invert the relationship - the theme names a path, it does not
-# own the daemon that draws it.
-depends=()
+# The theme NAMES resources, so it has to guarantee they exist. Without these the desktop
+# does not fall back to something sane - it falls back to whatever fontconfig substitutes,
+# which is how a missing font family turns into a desktop that looks broken rather than
+# plain.
+#  - noto-fonts carries both families the theme names, Noto Sans and Noto Sans Mono.
+#    libcosmic's compiled fallback is Open Sans, which nothing in this stack installs.
+#  - wmde-icons-base owns the WMDE icon theme that fun.wmde.Tk/icon_theme points at.
+# The wallpaper is the exception: it is named by path and drawn by wmde-bg, and depending
+# on the daemon would invert the relationship - the theme says what to show, it does not
+# own what shows it.
+depends=('noto-fonts' 'wmde-icons-base')
 makedepends=('just' 'git')
 source=("$pkgname::git+https://github.com/Lin-WMDE/wmde-themes.git#branch=wmde")
 sha256sums=('SKIP')
